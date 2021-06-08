@@ -1,8 +1,7 @@
 ---
-# Creates new user in ansible and slave hosts and generate ssh-keys on slave
-
-- name: Create user on ansible and slave hosts 
-  hosts: ['master', 'slave1']
+- name: Create user on ansible and test hosts 
+  hosts: ['ansible.local', 'test-3.local']
+  become: yes
   tasks:
 
   - name: Create users
@@ -11,10 +10,10 @@
       password: "{{ 'qazwsxEDC' | password_hash('sha512') }}"
       update_password: on_create
       groups: wheel
-      #generate_ssh_key: yes
 
 - name: Generate ssh-keys
-  hosts: ['master']
+  hosts: ['ansible.local']
+  become: yes
   gather_facts: no
   tasks:
 
@@ -23,18 +22,19 @@
       name: esentemov_ansible
       generate_ssh_key: yes
 
-- name: Transfer ssh-key to slave
-  hosts: ['slave1']
+- name: Transfer ssh-key to test host and change sshd_config
+  hosts: ['test-3.local']
+  become: yes
   gather_facts: no
   tasks:
 
-  - name: Transfer ssh-key to slave host
+  - name: Transfer ssh-key to test host
     authorized_key:
       user: esentemov_ansible
       state: present
-      key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+      key: "{{ lookup('file', '/home/esentemov_ansible/.ssh/id_rsa.pub') }}"
 
-  - name: Change slave's ssh_config
+  - name: Change test's ssh_config
     lineinfile:
       dest: /etc/ssh/sshd_config
       backup: yes
