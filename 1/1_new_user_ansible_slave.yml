@@ -1,0 +1,44 @@
+---
+# Creates new user in ansible and slave hosts and generate ssh-keys on slave
+
+- name: Create user on ansible and slave hosts 
+  hosts: ['master', 'slave1']
+  tasks:
+
+  - name: Create users
+    ansible.builtin.user:
+      name: esentemov_ansible
+      password: "{{ 'qazwsxEDC' | password_hash('sha512') }}"
+      update_password: on_create
+      groups: wheel
+      #generate_ssh_key: yes
+
+- name: Generate ssh-keys
+  hosts: ['master']
+  gather_facts: no
+  tasks:
+
+  - name: Generate ssh_key on ansible host
+    ansible.builtin.user:
+      name: esentemov_ansible
+      generate_ssh_key: yes
+
+- name: Transfer ssh-key to slave
+  hosts: ['slave1']
+  gather_facts: no
+  tasks:
+
+  - name: Transfer ssh-key to slave host
+    authorized_key:
+      user: esentemov_ansible
+      state: present
+      key: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+
+  - name: Change slave's ssh_config
+    lineinfile:
+      dest: /etc/ssh/sshd_config
+      backup: yes
+      regexp: '^PasswordAuthentication '
+      line: 'PasswordAuthentitication no'
+      state: present
+
