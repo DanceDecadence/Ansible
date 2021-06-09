@@ -7,11 +7,9 @@
   - name: Create users
     ansible.builtin.user:
       name: esentemov_ansible
-      password: "{{ 'qazwsxEDC' | password_hash('sha512') }}"
-      update_password: on_create
       groups: wheel
 
-- name: Generate ssh-keys
+- name: Generate ssh-keys for new user and fill authorized_keys on ansible host
   hosts: ['ansible.local']
   become: yes
   gather_facts: no
@@ -21,6 +19,12 @@
     ansible.builtin.user:
       name: esentemov_ansible
       generate_ssh_key: yes
+
+  - name: Transfer ssh-key to new user on ansible host
+    authorized_key:
+      user: esentemov_ansible
+      state: present
+      key: "{{ lookup('file', '/home/esentemov/.ssh/id_rsa.pub') }}"  
 
 - name: Transfer ssh-key to test host and change sshd_config
   hosts: ['test-3.local']
@@ -32,7 +36,7 @@
     authorized_key:
       user: esentemov_ansible
       state: present
-      key: "{{ lookup('file', '/home/esentemov_ansible/.ssh/id_rsa.pub') }}"
+      key: "{{ lookup('file', '/home/esentemov/.ssh/id_rsa.pub') }}"
 
   - name: Change test's ssh_config
     lineinfile:
