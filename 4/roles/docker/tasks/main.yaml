@@ -1,0 +1,36 @@
+---
+- name: Install yum utils
+  yum:
+    name: yum-utils
+    state: latest
+
+- name: Setup Docker repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+
+- name: Install Docker
+  package:
+    name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+    state: latest
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add user in group docker
+  user:
+    name: '{{ docker_user }}'
+    group: 'docker'
+    append: yes
+
+- name: Install docker-compose
+  get_url:
+    url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: 'u+x,g+x'
+  notify: 
+    - Create symlink
+    - Change group 

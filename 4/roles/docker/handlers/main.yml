@@ -1,0 +1,11 @@
+---
+- name: Create symlink
+  file:
+    src: /usr/local/bin/docker-compose
+    dest: /usr/bin/docker-compose
+    state: link
+
+- name: Change group
+  file:
+    path: /usr/local/bin/docker-compose
+    group: 'docker'
