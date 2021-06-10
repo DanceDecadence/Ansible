@@ -1,0 +1,65 @@
+---
+- name: Create users on both hosts
+  hosts: all
+  become: yes
+  gather_facts: no
+  vars: 
+    new_user: esentemov_ansible
+
+  tasks:
+  
+  - name: Create user
+    ansible.builtin.user:
+      name: "{{ new_user }}"
+      password: "{{ 'qwe123' | password_hash('sha512') }}"
+      update_password: on_create
+      append: yes
+      groups: wheel
+    notify: 
+      - Generate ssh-keys
+      - Sudo without password
+
+  handlers:
+
+  - name: Generate ssh-keys
+    ansible.builtin.user:
+      name: "{{ new_user }}"      
+      generate_ssh_key: yes
+    when: "inventory_hostname == 'ansible'"
+
+  - name: Sudo without password
+    lineinfile:
+      path: /etc/sudoers
+      backup: yes
+      line: '{{ new_user }} ALL=(ALL) NOPASSWD:ALL'
+    when: "inventory_hostname == 'test-3'"
+
+- name: Ssh customization for test host
+  hosts: 'test-3'
+  become: yes
+  gather_facts: no
+  vars:
+    new_user: esentemov_ansible
+
+  tasks:
+
+  - name: Transfer ssh-key to test host
+    authorized_key:
+      user: '{{ new_user }}'
+      state: present
+      key: "{{ lookup('file', '/home/{{ new_user }}/.ssh/id_rsa.pub') }}" 
+
+  - name: Change sshd_config
+    replace:
+      backup: yes
+      path: /etc/ssh/sshd_config
+      regexp: 'PasswordAuthentication yes'
+      replace: 'PasswordAuthentication no'
+    notify: Reload ssh service
+
+  handlers:
+
+  - name: Reload ssh service
+    service:
+      name: sshd
+      state: reload
