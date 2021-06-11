@@ -1,0 +1,36 @@
+---
+- name: Install epel-release
+  yum:
+    name: epel-release
+    state: latest
+
+- name: Install Nginx
+  yum:
+    name: nginx
+    state: latest
+  notify: 
+    - Start Nginx
+
+- name: Open HTTP with Firewall
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+  notify:
+    - Restart Firewall
+
+- name: Copy index.html
+  copy:
+    src: index.html
+    dest: /usr/share/nginx/html
+    force: yes
+    mode: 0775
+  notify:
+    - Restart Nginx
+     
+- name: Template for Nginx.conf
+  template:
+    src: nginx.j2
+    dest: /etc/nginx/nginx.conf
+  notify: 
+    - Restart Nginx
