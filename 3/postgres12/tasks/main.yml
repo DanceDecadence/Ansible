@@ -12,10 +12,12 @@
     state: installed
 
 - name: Enable PostgreSQL Repo
-  yum_repository:
-    name: pgdg12
-    enabled: yes
-    baseurl: https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-$releasever-$basearch
+  shell: 
+    'yum-config-manager --enable pgdg12'
+#  yum_repository:
+#    name: pgdg12
+#    enabled: yes
+#    baseurl: https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-$releasever-$basearch
 
 - name: Install PostgreSQL 12
   yum:
@@ -26,26 +28,30 @@
 
 - name: Copy script
   copy:
-    src: db_init
-    dest: /root/db_init
+    src: 2_postgres.sh
+    dest: /root
     owner: root
     mode: '0744'
 
-- name: Copy answer file
+- name: Copy autoscript file
   copy:
-    src: answers.txt
-    dest: /root/answers.txt
+    src: autoscript.txt
+    dest: /root
     owner: root
     mode: '0644'
 
-- name: Initialize DB cluster
-  shell: "sudo /root/db_init </root/answers.txt"
-  args:
-    creates: /data/postgres/12/data
+- name: Init DB
+  shell: "/root/2_postgres.sh < /root/autoscript.txt"
 
-- name: Open socket for subnet
-  lineinfile:
-    path: /data/postgres/12/data/postgresql.conf
-    regexp: '^listen_addresses'
-    line: listen_addresses = '{{ ansible_default_ipv4.address }}'
-    state: present
+- name: enable and start postgres service
+  service:
+    name               : postgresql-12
+    state              : started
+    enabled            : yes
+
+#- name: Open socket for subnet
+#  lineinfile:
+#    path: /data/postgres/12/data/postgresql.conf
+#    regexp: '^listen_addresses'
+#    line: listen_addresses = '{{ ansible_default_ipv4.address }}'
+#    state: present

@@ -15,7 +15,7 @@ read PGDATA
 
 if [ $PGDATA="" ]
 then
-export PGDATA=/data/postgres/12/data
+PGDATA="/data/postgres/12/data/"
 fi
 
 echo PGDATA=$PGDATA

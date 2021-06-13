@@ -2,5 +2,5 @@
 - name: PostgreSQL 12 Role
   hosts: test-3
   become: yes
-  role: 
+  roles: 
     - postgres12
