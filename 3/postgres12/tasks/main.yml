@@ -1,0 +1,51 @@
+---
+- name: Add PostgreSQL Repo
+  yum:
+    name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    state: installed
+
+- name: Install Required Packages
+  yum:
+    name:
+    - epel-release
+    - yum-utils
+    state: installed
+
+- name: Enable PostgreSQL Repo
+  yum_repository:
+    name: pgdg12
+    enabled: yes
+    baseurl: https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-$releasever-$basearch
+
+- name: Install PostgreSQL 12
+  yum:
+    name:
+    - postgresql12-server
+    - postgresql12
+    state: installed
+
+- name: Copy script
+  copy:
+    src: db_init
+    dest: /root/db_init
+    owner: root
+    mode: '0744'
+
+- name: Copy answer file
+  copy:
+    src: answers.txt
+    dest: /root/answers.txt
+    owner: root
+    mode: '0644'
+
+- name: Initialize DB cluster
+  shell: "sudo /root/db_init </root/answers.txt"
+  args:
+    creates: /data/postgres/12/data
+
+- name: Open socket for subnet
+  lineinfile:
+    path: /data/postgres/12/data/postgresql.conf
+    regexp: '^listen_addresses'
+    line: listen_addresses = '{{ ansible_default_ipv4.address }}'
+    state: present
