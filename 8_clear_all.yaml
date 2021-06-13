@@ -1,0 +1,6 @@
+---
+- name: Delete all installed packages
+  hosts: test-3.local
+  become: yes
+  roles: 
+    - clear_all

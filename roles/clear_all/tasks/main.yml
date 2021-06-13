@@ -1,0 +1,14 @@
+---
+- name: Remove installed packages
+  yum:
+    name: '{{ packages }}'
+    state: absent
+#  with_items:
+#    - epel-release
+#    - yum-utils
+#    - docker-ce
+#    - docker-ce-cli
+#    - docker-compose
+#    - nginx
+#    - postgresql12-server
+#    - postgresql12
