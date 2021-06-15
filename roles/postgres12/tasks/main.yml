@@ -12,12 +12,13 @@
     state: installed
 
 - name: Enable PostgreSQL Repo
-  shell: 
-    'yum-config-manager --enable pgdg12'
-#  yum_repository:
-#    name: pgdg12
-#    enabled: yes
-#    baseurl: https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-$releasever-$basearch
+#  shell: 
+#    'yum-config-manager --enable pgdg12'
+  yum_repository:
+    name: pgdg12
+    baseurl: https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-$releasever-$basearch
+    description: postgresql-12
+    enabled: yes
 
 - name: Install PostgreSQL 12
   yum:
@@ -48,10 +49,3 @@
     name               : postgresql-12
     state              : started
     enabled            : yes
-
-#- name: Open socket for subnet
-#  lineinfile:
-#    path: /data/postgres/12/data/postgresql.conf
-#    regexp: '^listen_addresses'
-#    line: listen_addresses = '{{ ansible_default_ipv4.address }}'
-#    state: present
