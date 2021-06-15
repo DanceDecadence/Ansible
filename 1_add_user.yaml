@@ -32,10 +32,10 @@
       path: /etc/sudoers
       backup: yes
       line: '{{ new_user }} ALL=(ALL) NOPASSWD:ALL'
-    when: "inventory_hostname == 'test-3'"
+    when: "inventory_hostname == 'test-3.local'"
 
 - name: Ssh customization for test host
-  hosts: 'test-3'
+  hosts: 'test-3.local'
   become: yes
   gather_facts: no
   vars:
@@ -62,4 +62,4 @@
   - name: Reload ssh service
     service:
       name: sshd
-      state: reload
+      state: reloaded
