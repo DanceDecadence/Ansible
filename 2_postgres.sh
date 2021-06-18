@@ -54,14 +54,9 @@ echo "export PGDATA" >> /var/lib/pgsql/.bash_profile
 su - postgres -c "$INITDB -D $PGDATA"
 su - postgres -c "/usr/pgsql-12/bin/pg_ctl -D $PGDATA -l logfile start"
 /usr/pgsql-12/bin/postgresql-12-setup initdb
+pkill -u postgres
 systemctl enable postgresql-12
 systemctl start
-
-#su - postgres -c "$INITDB -D $PGDATA"
-#su - postgres -c "/usr/pgsql-12/bin/pg_ctl -D /data/postgres/12/data -l logfile start"
-#pkill -u postgres
-#systemctl enable postgresql-12
-#systemctl start postgresql-12
 
 
 ### Read allowed subnet ###
