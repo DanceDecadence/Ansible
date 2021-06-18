@@ -1,7 +1,0 @@
-stages:
-  - test
-
-say_hello:
-  stage: test
-  script: 
-    - echo "Hello"

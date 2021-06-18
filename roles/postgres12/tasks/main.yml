@@ -29,7 +29,8 @@
 
 - name: Copy script
   copy:
-    src: 2_postgres.sh
+    src: ../../../2_postgres.sh
+    force: yes
     dest: /root
     owner: root
     mode: '0744'

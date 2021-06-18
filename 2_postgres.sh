@@ -51,26 +51,29 @@ echo "export PGDATA" >> /var/lib/pgsql/.bash_profile
 
 ### initialize DB cluster ###
 
+su - postgres -c "$INITDB -D $PGDATA"
+su - postgres -c "/usr/pgsql-12/bin/pg_ctl -D $PGDATA -l logfile start"
 /usr/pgsql-12/bin/postgresql-12-setup initdb
 systemctl enable postgresql-12
 systemctl start
-su - postgres -c "$INITDB -D $PGDATA"
-su - postgres -c "/usr/pgsql-12/bin/pg_ctl -D /data/postgres/12/data -l logfile start"
-pkill -u postgres
+
+#su - postgres -c "$INITDB -D $PGDATA"
+#su - postgres -c "/usr/pgsql-12/bin/pg_ctl -D /data/postgres/12/data -l logfile start"
+#pkill -u postgres
 #systemctl enable postgresql-12
 #systemctl start postgresql-12
 
 
 ### Read allowed subnet ###
 
-#echo "Enter allowed subnet to access DB [192.168.0.0/24]: "
-#read allowed_subnet
+echo "Enter allowed subnet to access DB [192.168.0.0/24]: "
+read allowed_subnet
 
-#if [ "$allowed_subnet" = "" ] 
-#then 
-#allowed_subnet='192.168.0.0/24'
-#fi
+if [ "$allowed_subnet" = "" ] 
+then 
+allowed_subnet='192.168.0.0/24'
+fi
 
 
 # Add subnet to pg_hba.conf
-#echo "host all all ${allowed_subnet} md5" >> $(find $PGDATA -name pg_hba.conf)
+echo "host	all 		all 		${allowed_subnet} 		md5" >> $(find $PGDATA -name pg_hba.conf)
