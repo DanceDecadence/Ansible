@@ -1,0 +1,6 @@
+---
+- name: Nginx tls domain
+  hosts: tls.local
+  become: yes
+  roles:
+  - tls_nginx

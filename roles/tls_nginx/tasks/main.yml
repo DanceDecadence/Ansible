@@ -1,0 +1,24 @@
+---
+- name: Find config
+  shell: grep -lir "proxy-pass test-[1-8].local" /etc/nginx/*
+  register: grep_result
+  ignore_errors: yes
+  
+- name: Read greb_result
+  debug:
+    var: grep_result
+  
+- name: Copy config if file doesn't exist
+  copy:
+    src: test.conf
+    dest: /etc/nginx/conf.d/
+    mode: 0644
+  when: grep_result.stdout == ""
+
+- name: Change config if file exists
+  replace:
+    path: "{{ grep_result.stdout }}"
+    regexp: "test-[1-8]"
+    replace: "test-2"
+  when: grep_result.stdout != ""
+
