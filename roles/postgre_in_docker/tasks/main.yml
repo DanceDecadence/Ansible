@@ -1,0 +1,26 @@
+---
+- name: Install python latest
+  yum:
+    name: python3
+    state: latest
+
+- name: Install pip
+  yum:
+    name: python3-pip
+    state: latest
+  notify: 
+
+- name: Upgrade pip
+  shell: 
+    pip install --upgrade pip
+
+- name: Install docker-py
+  pip:
+    name: docker
+
+- name: Pull docker image
+  docker_image:
+    name: python
+    source: pull
+
+

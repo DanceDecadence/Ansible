@@ -22,3 +22,7 @@
     replace: "test-2"
   when: grep_result.stdout != ""
 
+- name: Restart Nginx
+  service:
+    name: nginx
+    state: restarted
