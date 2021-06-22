@@ -1,0 +1,6 @@
+---
+- name: Postgre in docker
+  hosts: test-3.local
+  become: yes
+  roles:
+    - postgre_in_docker
