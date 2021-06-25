@@ -1,7 +1,7 @@
 ---
-- name: Install yum utils
+- name: Install yum utils and epel-release
   yum:
-    name: yum-utils
+    name: ['yum-utils', 'epel-release']
     state: latest
 
 - name: Setup Docker repo
@@ -11,7 +11,7 @@
 
 - name: Install Docker
   package:
-    name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+    name: ['docker-ce', 'docker-ce-cli', 'containerd.io', 'docker-compose']
     state: latest
 
 - name: Start Docker service
@@ -26,11 +26,11 @@
     group: 'docker'
     append: yes
 
-- name: Install docker-compose
-  get_url:
-    url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
-    dest: /usr/local/bin/docker-compose
-    mode: 'u+x,g+x'
-  notify: 
-    - Create symlink
-    - Change group 
+#- name: Install docker-compose
+#  get_url:
+#    url : https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-Linux-x86_64
+#    dest: /usr/local/bin/docker-compose
+#    mode: 'u+x,g+x'
+#  notify: 
+#    - Create symlink
+#    - Change group 

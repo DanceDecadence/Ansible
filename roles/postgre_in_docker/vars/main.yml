@@ -1,2 +1,3 @@
 ---
 # vars file for postgre_in_docker
+ansible_python_interpreter: /usr/bin/python3
