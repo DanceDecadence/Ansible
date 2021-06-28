@@ -1,9 +1,4 @@
 ---
-- name: Install epel-release
-  yum:
-    name: epel-release
-    state: latest
-
 - name: DockerHub login
   docker_login:
     username: "{{ dockerhub_login }}"
@@ -16,9 +11,10 @@
 
 - name: Create/check directory
   file: 
-    path: data/postgres/docker/data
+    path: /data/postgres/docker/data
     state: directory
     mode: 750
+    recurse: yes
     group: docker
 
 - name: Create docker container
